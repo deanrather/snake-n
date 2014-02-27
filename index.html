@@ -1,5 +1,6 @@
 <html>
 	<head>
+		<title>Snake N</title>
 		<script>
 /*!
  * jQuery JavaScript Library v1.4.2
@@ -159,10 +160,13 @@ e&&e.document?e.document.compatMode==="CSS1Compat"&&e.document.documentElement["
 		</script>
 		<!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> -->
 		<script src="/socket.io/socket.io.js"></script>
+		<style>
+			body {overflow: hidden}
+			#world {letter-spacing: 0.5em}
+		</style>
 	</head>
 	<body>
-		<!-- <h1>Snake N</h1> -->
-		<div id="gameOver">Game Over!</div>
+		<pre>SCORE: <span id="score">0</span>         <span id="notGameOver">                   </span><span id="gameOver">GAME OVER <span id="restart">[restart]</span></span>         <span id="highscore_user"></span>: <span id="highscore"></span></pre>
 		<pre id="world"></pre>
 	</body>
 	<script>
@@ -170,41 +174,66 @@ e&&e.document?e.document.compatMode==="CSS1Compat"&&e.document.documentElement["
 		var socket = null;
 		var world = null;
 		var id = null;
-		var name = 'Anon';
+		var name = '';
 
 		$( document ).ready(function()
 		{
 
 			$("#gameOver").hide();
 
-			socket = io.connect('http://localhost');
+			socket = io.connect('http://192.168.0.9');
 			
 			socket.on('id', function(value) {
 				id = value;
 			});
 
 			socket.on('game', function(game) {
-				world = generateWorld(game);
+				var snake = mySnake(game);
+				world = generateWorld(game, snake);
 				drawWorld(world);
-				if(imDead(game))
+				if(mySnake) $("#score").html(snake.score);
+				if(snake.dead)
 				{
 					$("#gameOver").show();
+					$("#notGameOver").hide();
 				}
 			});
 		
 			name = window.prompt("Name:");
-			if(name) socket.emit('start', name);
+			if(name)
+			{
+				socket.emit('start', name);
+			}
+			else
+			{
+				$("body").html('no name no good.');
+			}
 
+			var prevKey = null;
 			window.onkeydown = function(e){
+				if(prevKey == e.which) return;
 				if(e.which == 38) socket.emit('direction', 'up');
 				if(e.which == 40) socket.emit('direction', 'down');	
 				if(e.which == 37) socket.emit('direction', 'left');
 				if(e.which == 39) socket.emit('direction', 'right');
+				if(e.which == 13) restart();
+				prevKey = e.which;
 			};
+
+			$("#restart").click(function(){
+				restart();
+			});
 
 		});
 
-		function generateWorld(game)
+		function restart()
+		{
+			$("#gameOver").hide();
+			$("#notGameOver").show();
+			socket.emit('start', name);
+		}
+
+		function generateWorld(game, mySnake)
 		{
 			// clear canvas
 			var world = [];
@@ -230,15 +259,23 @@ e&&e.document?e.document.compatMode==="CSS1Compat"&&e.document.documentElement["
 				world[game.world.width-1][y] = '#';
 			}
 
+			var highscore = -1;
+
 			// add snakes
 			for(var i=0; i<game.snakes.length; i++)
 			{
 				var snake = game.snakes[i];
+				if(!snake.dead && snake.score > highscore)
+				{
+					highscore = snake.score;
+					setHighScore(snake);
+				}
 				for(var j=0; j<snake.body.length; j++)
 				{
 					var bodyPart = snake.body[j];
 					var character = (snake.name[j] ? snake.name[j] : '#');
-					world[bodyPart[0]][bodyPart[1]] = (snake.dead ? '/' : character);
+					var isMySnake = ((mySnake && mySnake.id && snake.id) && snake.id == mySnake.id);
+					world[bodyPart[0]][bodyPart[1]] = (snake.dead && !isMySnake ? '/' : character);
 				}
 			}
 
@@ -246,23 +283,29 @@ e&&e.document?e.document.compatMode==="CSS1Compat"&&e.document.documentElement["
 			for(var i=0; i<game.food.length; i++)
 			{
 				var food = game.food[i];
-				world[food[0]][food[1]] = 'F';
+				world[food[0]][food[1]] = 'O';
 			}
 
 			return world;
 		}
 
-		function imDead(game)
+		function mySnake(game)
 		{
 			for(var i=0; i<game.snakes.length; i++)
 			{
 				var snake = game.snakes[i];
-				if(snake.id == id && snake.dead)
+				if(snake.id == id)
 				{
-					return true;
+					return snake;
 				}
 			}
 			return false;
+		}
+
+		function setHighScore(snake)
+		{
+			$("#highscore").html(snake.score);
+			$("#highscore_user").html(snake.name);
 		}
 
 		function drawWorld(world)
