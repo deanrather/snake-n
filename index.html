@@ -162,12 +162,38 @@ e&&e.document?e.document.compatMode==="CSS1Compat"&&e.document.documentElement["
 		<script src="/socket.io/socket.io.js"></script>
 		<style>
 			body {overflow: hidden}
+			#game {display: inline-block;}
 			#world {letter-spacing: 0.5em}
+			#controls {display: none; text-align: center; width: 30%; height:30%; margin: 0 auto;}
+			#controls .key {border: 2px solid black;}
+			@media only screen and (max-device-width: 600px)
+			{ 
+				#controls { display: block; } 
+			}
 		</style>
 	</head>
 	<body>
-		<pre>SCORE: <span id="score">0</span>         <span id="notGameOver">                   </span><span id="gameOver">GAME OVER <span id="restart">[restart]</span></span>         <span id="highscore_user"></span>: <span id="highscore"></span></pre>
+		<span id="game">
+		<pre>SCORE: <span id="score">0</span>         <span id="notGameOver">                   </span><span id="gameOver">GAME OVER <span class="restart">[restart]</span></span>         <span id="highscore_user"></span>: <span id="highscore"></span></pre>
 		<pre id="world"></pre>
+		<table id="controls">
+			<tr>
+				<td></td>
+				<td class="key" data-direction="up">UP</td>
+				<td></td>
+			</tr>
+			<tr>
+				<td class="key" data-direction="left">LEFT</td>
+				<td><span class="restart">[restart]</span></td>
+				<td class="key" data-direction="right">RIGHT</td>
+			</tr>
+			<tr>
+				<td></td>
+				<td class="key" data-direction="down">DOWN</td>
+				<td></td>
+			</tr>
+		</table>
+		</span>
 	</body>
 	<script>
 
@@ -178,8 +204,8 @@ e&&e.document?e.document.compatMode==="CSS1Compat"&&e.document.documentElement["
 
 		$( document ).ready(function()
 		{
-
 			$("#gameOver").hide();
+			$(".restart").hide();
 
 			socket = io.connect('http://deanrather.com:8080');
 			
@@ -195,11 +221,13 @@ e&&e.document?e.document.compatMode==="CSS1Compat"&&e.document.documentElement["
 				if(snake.dead)
 				{
 					$("#gameOver").show();
+					$(".restart").show();
 					$("#notGameOver").hide();
 				}
 			});
 		
-			name = window.prompt("Name:");
+			// name = 'test';
+			name = window.prompt("What's Your Name:");
 			if(name)
 			{
 				socket.emit('start', name);
@@ -220,7 +248,11 @@ e&&e.document?e.document.compatMode==="CSS1Compat"&&e.document.documentElement["
 				prevKey = e.which;
 			};
 
-			$("#restart").click(function(){
+			$(".key").click(function(element, v, b){
+				socket.emit('direction', $(this).attr('data-direction'));
+			});
+
+			$(".restart").click(function(){
 				restart();
 			});
 
@@ -229,6 +261,7 @@ e&&e.document?e.document.compatMode==="CSS1Compat"&&e.document.documentElement["
 		function restart()
 		{
 			$("#gameOver").hide();
+			$(".restart").hide();
 			$("#notGameOver").show();
 			socket.emit('start', name);
 		}
@@ -320,6 +353,16 @@ e&&e.document?e.document.compatMode==="CSS1Compat"&&e.document.documentElement["
 				string += "\n";
 			}
 			$("#world").html(string);
+
+			// resize world
+			var desiredWidth = $(window).width()*0.95;
+			var desiredHeight = $(window).height()*0.95;
+			var fontSize = 10;
+			while($('#game').width() < desiredWidth && $('#game').height() < desiredHeight)
+			{
+				$('#game').css('font-size', fontSize + 'px');
+				fontSize++;
+			}
 		}
 
 	</script>
