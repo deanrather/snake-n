@@ -181,7 +181,7 @@ e&&e.document?e.document.compatMode==="CSS1Compat"&&e.document.documentElement["
 
 			$("#gameOver").hide();
 
-			socket = io.connect('http://192.168.0.9');
+			socket = io.connect('http://deanrather.com:8080');
 			
 			socket.on('id', function(value) {
 				id = value;
@@ -212,10 +212,10 @@ e&&e.document?e.document.compatMode==="CSS1Compat"&&e.document.documentElement["
 			var prevKey = null;
 			window.onkeydown = function(e){
 				if(prevKey == e.which) return;
-				if(e.which == 38) socket.emit('direction', 'up');
-				if(e.which == 40) socket.emit('direction', 'down');	
-				if(e.which == 37) socket.emit('direction', 'left');
-				if(e.which == 39) socket.emit('direction', 'right');
+				if(e.which == 38 || e.which == 87) socket.emit('direction', 'up');
+				if(e.which == 40 || e.which == 83) socket.emit('direction', 'down');	
+				if(e.which == 37 || e.which == 65) socket.emit('direction', 'left');
+				if(e.which == 39 || e.which == 68) socket.emit('direction', 'right');
 				if(e.which == 13) restart();
 				prevKey = e.which;
 			};

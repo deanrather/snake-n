@@ -2,7 +2,7 @@ var app = require('http').createServer(handler)
   , io = require('socket.io').listen(app, {log: false})
   , fs = require('fs')
 
-app.listen(80);
+app.listen(8080);
 console.log("Server started");
 
 function handler (req, res) {
@@ -269,7 +269,8 @@ function collidesWithSnake(coords)
 function enoughFood()
 {
   // return (game.food.length > 5);
-  return (game.food.length >= Math.ceil(liveSnakeCount/2));
+  // return (game.food.length >= Math.ceil(liveSnakeCount/2));
+  return (game.food.length >= liveSnakeCount);
 }
 
 function kill(snake)
