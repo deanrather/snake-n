@@ -154,3 +154,6 @@ eg snake:
 01234
 
 {2,3}, {3,3}, {3,2}, {3,1}, {4,1}
+
+
+This is just a test message to see if c9.io is cool or not.
