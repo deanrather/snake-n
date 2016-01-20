@@ -207,7 +207,7 @@ e&&e.document?e.document.compatMode==="CSS1Compat"&&e.document.documentElement["
 			$("#gameOver").hide();
 			$(".restart").hide();
 
-			socket = io.connect('http://deanrather.com:8080');
+			socket = io.connect('/');
 			
 			socket.on('id', function(value) {
 				id = value;
