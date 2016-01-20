@@ -2,7 +2,8 @@ var app = require('http').createServer(handler)
   , io = require('socket.io').listen(app, {log: false})
   , fs = require('fs')
 
-app.listen(8080);
+var port = process.env.PORT || 8080;
+app.listen(port);
 console.log("Server started");
 
 function handler (req, res) {
