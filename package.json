@@ -1,0 +1,26 @@
+{
+  "name": "snake-n",
+  "version": "0.0.1",
+  "description": "MMO Snake",
+  "main": "app.js",
+  "scripts": {
+      "start": "node app.js"
+    },
+  "dependencies": {
+      "socket.io": "latest"
+    },
+  "engines": {
+      "node": "0.12.7"
+    },
+  "repository": {
+      "type": "git",
+      "url": "https://github.com/deanrather/snake-n"
+    },
+  "keywords": [
+      "node",
+      "snake",
+      "multiplayer",
+      "game"
+    ],
+  "license": "MIT"
+}
