@@ -1,3 +1,20 @@
+# Snake-n
+
+MMO Snake
+
+[Play here](https://guarded-headland-47771.herokuapp.com/)
+
+
+
+
+
+---
+
+
+
+
+
+
 1. Purpose and Principles
 	Why. What problem are we trying to solve
 		Want to make a game. Should be fun and easy to get into.
