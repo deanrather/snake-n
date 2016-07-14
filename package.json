@@ -1,6 +1,6 @@
 {
   "name": "snake-n",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "MMO Snake",
   "main": "app.js",
   "scripts": {
@@ -10,7 +10,7 @@
       "socket.io": "latest"
     },
   "engines": {
-      "node": "0.12.7"
+      "node": "latest"
     },
   "repository": {
       "type": "git",
